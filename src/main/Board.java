@@ -5,6 +5,7 @@ import pieces.*;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class Board extends JPanel {
 
@@ -21,6 +22,9 @@ public class Board extends JPanel {
     public CheckScanner checkScanner = new CheckScanner(this);
 
     public int enPassantSquare = -1;
+
+    private boolean isWhiteToMove = true;
+    private boolean isGameOver = false;
 
 
 
@@ -60,6 +64,10 @@ public class Board extends JPanel {
             move.piece.isFirstMove = false;
 
             take(move.take);
+
+            isWhiteToMove = !isWhiteToMove;
+
+            updateGameState();
     }
 
     private void moveKing(Move move){
@@ -112,6 +120,14 @@ public class Board extends JPanel {
 
     public boolean isValidMove(Move move){
 
+        if(isGameOver){
+            return false;
+        }
+
+        if(move.piece.isWhite != isWhiteToMove){
+            return false;
+        }
+
         if(sameTeam(move.piece, move.take)){
             return false;
         }
@@ -125,6 +141,10 @@ public class Board extends JPanel {
         }
 
         if(checkScanner.isKingChecked(move)){
+            return false;
+        }
+
+        if(move.newCol == move.prevCol && move.newRow == move.prevRow){
             return false;
         }
 
@@ -160,7 +180,7 @@ public class Board extends JPanel {
         pieceList.add(new Knight(this, 6, 0, false));
         pieceList.add(new Rook(this, 0, 0, false));
         pieceList.add(new Rook(this, 7, 0, false));
-
+//
         pieceList.add(new King(this, 4, 7, true));
         pieceList.add(new Queen(this, 3, 7, true));
         pieceList.add(new Bishop(this, 2, 7, true));
@@ -188,6 +208,36 @@ public class Board extends JPanel {
         pieceList.add(new Pawn(this, 6, 6, true));
         pieceList.add(new Pawn(this, 7, 6, true));
 
+    }
+
+    private void updateGameState(){
+        Piece king = findKing(isWhiteToMove);
+
+        if(checkScanner.isGameOver(king)){
+            if(checkScanner.isKingChecked(new Move(this, king, king.col, king.row))){
+                System.out.println(isWhiteToMove ? "Checkmate!!! Black wins!" : "Checkmate!!! White wins!");
+            } else {
+                System.out.println("Oops! Stalemate!");
+            }
+            isGameOver = true;
+        } else if(notEnoughPieces(true) && notEnoughPieces(false)){
+            System.out.println("Not enough pieces to continue playing! It's a draw!");
+            isGameOver = true;
+        }
+
+
+
+    }
+
+    private boolean notEnoughPieces(boolean isWhite){
+        ArrayList<String> names = pieceList.stream()
+                .filter(p -> p.isWhite == isWhite)
+                .map(p -> p.name)
+                .collect(Collectors.toCollection(ArrayList::new));
+        if(names.contains("Queen") || names.contains("Pawn") || names.contains("Rook")){
+            return false;
+        }
+        return names.size() < 3;
     }
 
     public void paintComponent(Graphics g){
