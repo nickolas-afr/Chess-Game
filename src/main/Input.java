@@ -26,7 +26,6 @@ public class Input extends MouseAdapter {
         }
 
     }
-
     @Override
     public void mouseDragged(MouseEvent e) {
 
@@ -52,8 +51,8 @@ public class Input extends MouseAdapter {
             if(board.isValidMove(move)){
                 board.makeMove(move);
             } else{
-                board.selectedPiece.x = board.selectedPiece.col + board.squareSize;
-                board.selectedPiece.y = board.selectedPiece.row + board.squareSize;
+                board.selectedPiece.x = board.selectedPiece.col * board.squareSize;
+                board.selectedPiece.y = board.selectedPiece.row * board.squareSize;
             }
         }
 
