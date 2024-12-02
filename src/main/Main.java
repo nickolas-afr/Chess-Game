@@ -7,7 +7,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        JFrame frame = new JFrame();
+        JFrame frame = new JFrame("Chess Game");
 
         frame.getContentPane().setBackground(Color.black);
         frame.setLayout(new GridBagLayout());
