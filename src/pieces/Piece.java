@@ -21,7 +21,7 @@ public class Piece {
 
     {
         try {
-            sheet = ImageIO.read(ClassLoader.getSystemResourceAsStream("pieces.png"));
+            sheet = ImageIO.read(ClassLoader.getSystemResourceAsStream("resources/pieces.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -12,6 +12,7 @@ public class Main {
         frame.getContentPane().setBackground(Color.black);
         frame.setLayout(new GridBagLayout());
         frame.setMinimumSize(new Dimension(800, 800));
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo((null));
 
         Board board = new Board();

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 public class Board extends JPanel {
 
+    private String gameOverMessage = "";
     public int squareSize = 70;
     int cols = 8;
     int rows = 8;
@@ -212,21 +213,20 @@ public class Board extends JPanel {
 
     private void updateGameState(){
         Piece king = findKing(isWhiteToMove);
-
-        if(checkScanner.isGameOver(king)){
-            if(checkScanner.isKingChecked(new Move(this, king, king.col, king.row))){
-                System.out.println(isWhiteToMove ? "Checkmate!!! Black wins!" : "Checkmate!!! White wins!");
+        if (checkScanner.isGameOver(king)) {
+            if (checkScanner.isKingChecked(new Move(this, king, king.col, king.row))) {
+                gameOverMessage = isWhiteToMove ? "Checkmate!!! Black wins!" : "Checkmate!!! White wins!";
+                System.out.println(gameOverMessage);
             } else {
-                System.out.println("Oops! Stalemate!");
+                gameOverMessage = "Oops! Stalemate!";
+                System.out.println(gameOverMessage);
             }
             isGameOver = true;
-        } else if(notEnoughPieces(true) && notEnoughPieces(false)){
-            System.out.println("Not enough pieces to continue playing! It's a draw!");
+        } else if (notEnoughPieces(true) && notEnoughPieces(false)) {
+            gameOverMessage = "Not enough pieces to continue playing! It's a draw!";
+            System.out.println(gameOverMessage);
             isGameOver = true;
         }
-
-
-
     }
 
     private boolean notEnoughPieces(boolean isWhite){
@@ -242,7 +242,6 @@ public class Board extends JPanel {
 
     public void paintComponent(Graphics g){
         Graphics2D g2d = (Graphics2D) g;
-
         // show board
         for(int r = 0; r < rows; r++){
             for(int c = 0; c < cols; c++){
@@ -250,26 +249,32 @@ public class Board extends JPanel {
                 g2d.fillRect(c * squareSize, r * squareSize, squareSize, squareSize);
             }
         }
-
         // show highlights
         if(selectedPiece != null) {
             for (int r = 0; r < rows; r++) {
                 for (int c = 0; c < cols; c++) {
                     if (isValidMove(new Move(this, selectedPiece, c, r))) {
-
                         g2d.setColor(new Color(0, 255, 0, 110));
                         g2d.fillRect(c * squareSize, r * squareSize, squareSize, squareSize);
-
                     }
                 }
             }
         }
-
         // show pieces
         for(Piece piece : pieceList){
             piece.paint(g2d);
         }
-
+        // Draw the game over message if the game is over
+        if (isGameOver) {
+            g2d.setColor(Color.RED);
+            // Set the text color to red
+            g2d.setFont(new Font("Arial", Font.BOLD, 45));
+            // Set the font and size
+            FontMetrics fm = g2d.getFontMetrics();
+            int textWidth = fm.stringWidth(gameOverMessage);
+            int x = (getWidth() - textWidth) / 2;
+            int y = getHeight() / 2;
+            g2d.drawString(gameOverMessage, x, y); // Draw the message in the center of the board
+        }
     }
-
 }
